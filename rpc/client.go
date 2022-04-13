@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"errors"
+	"io"
 	"io/ioutil"
 	"net/url"
 	"time"
@@ -111,6 +112,15 @@ func (c *client) AddTorrentFromFile(filename string, options ...interface{}) (gi
 	return c.AddTorrentFromBase64(file)
 }
 
+func (c *client) AddTorrentFromIo(r io.Reader, options ...interface{}) (gid string, err error) {
+	co, err := ioutil.ReadAll(r)
+	if err != nil {
+		return
+	}
+	file := base64.StdEncoding.EncodeToString(co)
+	return c.AddTorrentFromBase64(file)
+}
+
 // `aria2.addMetalink([secret, ]metalink[, options[, position]])`
 // This method adds a Metalink download by uploading a ".metalink" file.
 // metalink is a base64-encoded string which contains the contents of the ".metalink" file.
@@ -138,6 +148,15 @@ func (c *client) AddMetalinkFromBase64(file string, options ...interface{}) (gid
 
 func (c *client) AddMetalinkFromFile(filename string, options ...interface{}) (gid []string, err error) {
 	co, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return
+	}
+	file := base64.StdEncoding.EncodeToString(co)
+	return c.AddMetalinkFromBase64(file)
+}
+
+func (c *client) AddMetalinkFromIo(r io.Reader, options ...interface{}) (gid []string, err error) {
+	co, err := ioutil.ReadAll(r)
 	if err != nil {
 		return
 	}
