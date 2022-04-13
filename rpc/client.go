@@ -88,12 +88,7 @@ func (c *client) AddURI(uris []string, options ...interface{}) (gid string, err 
 // E.g. a file name might be 0a3893293e27ac0490424c06de4d09242215f0a6.torrent.
 // If a file with the same name already exists, it is overwritten!
 // If the file cannot be saved successfully or --rpc-save-upload-metadata is false, the downloads added by this method are not saved by --save-session.
-func (c *client) AddTorrent(filename string, options ...interface{}) (gid string, err error) {
-	co, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return
-	}
-	file := base64.StdEncoding.EncodeToString(co)
+func (c *client) AddTorrentFromBase64(file string, options ...interface{}) (gid string, err error) {
 	params := make([]interface{}, 0, 3)
 	if c.token != "" {
 		params = append(params, "token:"+c.token)
@@ -105,6 +100,15 @@ func (c *client) AddTorrent(filename string, options ...interface{}) (gid string
 	}
 	err = c.Call(aria2AddTorrent, params, &gid)
 	return
+}
+
+func (c *client) AddTorrentFromFile(filename string, options ...interface{}) (gid string, err error) {
+	co, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return
+	}
+	file := base64.StdEncoding.EncodeToString(co)
+	return c.AddTorrentFromBase64(file)
 }
 
 // `aria2.addMetalink([secret, ]metalink[, options[, position]])`
@@ -119,12 +123,7 @@ func (c *client) AddTorrent(filename string, options ...interface{}) (gid string
 // E.g. a file name might be 0a3893293e27ac0490424c06de4d09242215f0a6.metalink.
 // If a file with the same name already exists, it is overwritten!
 // If the file cannot be saved successfully or --rpc-save-upload-metadata is false, the downloads added by this method are not saved by --save-session.
-func (c *client) AddMetalink(filename string, options ...interface{}) (gid []string, err error) {
-	co, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return
-	}
-	file := base64.StdEncoding.EncodeToString(co)
+func (c *client) AddMetalinkFromBase64(file string, options ...interface{}) (gid []string, err error) {
 	params := make([]interface{}, 0, 2)
 	if c.token != "" {
 		params = append(params, "token:"+c.token)
@@ -135,6 +134,15 @@ func (c *client) AddMetalink(filename string, options ...interface{}) (gid []str
 	}
 	err = c.Call(aria2AddMetalink, params, &gid)
 	return
+}
+
+func (c *client) AddMetalinkFromFile(filename string, options ...interface{}) (gid []string, err error) {
+	co, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return
+	}
+	file := base64.StdEncoding.EncodeToString(co)
+	return c.AddMetalinkFromBase64(file)
 }
 
 // `aria2.remove([secret, ]gid)`
