@@ -1,5 +1,5 @@
 package rpc
-
+import "io"
 // Protocol is a set of rpc methods that aria2 daemon supports
 type Protocol interface {
 	AddURI(uris []string, options ...interface{}) (gid string, err error)
